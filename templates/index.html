@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>InstaReels Downloader - Download em Lote</title>
+  <title>InstaReels Downloader</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,12 +36,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
+      padding: 20px 14px;
     }
 
     .container {
       width: 100%;
-      max-width: 680px;
+      max-width: 640px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -50,7 +50,7 @@
     /* Header */
     .header {
       text-align: center;
-      padding: 8px 0 12px;
+      padding: 4px 0 8px;
     }
 
     .badge {
@@ -68,7 +68,7 @@
     }
 
     .title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.5px;
       background: var(--gradient);
@@ -87,39 +87,154 @@
       background: var(--card);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
       gap: 14px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    .input-header {
+    /* Mode Tabs */
+    .tab-bar {
+      display: flex;
+      background: #0d0f17;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #1e2436;
+      color: #fff;
+    }
+
+    /* Input List */
+    .link-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .link-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #0d0f17;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .link-item-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .input-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #e5e7eb;
-    }
-
-    .counter-badge {
+    .link-item-label {
       font-size: 11px;
       font-weight: 700;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      padding: 2px 8px;
-      border-radius: 999px;
+      color: #94a3b8;
     }
 
-    textarea {
+    .btn-remove-row {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .btn-remove-row:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    .link-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: #141824;
+      border: 1px solid #283144;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(225, 48, 108, 0.2);
+    }
+
+    .btn-paste-row {
+      background: #202636;
+      border: 1px solid #2d364d;
+      color: #e2e8f0;
+      padding: 0 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-paste-row:hover {
+      background: #2b354d;
+    }
+
+    /* Add Row Button */
+    .btn-add-row {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed #333d54;
+      color: #38bdf8;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-add-row:hover {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: #38bdf8;
+    }
+
+    /* Bulk Textarea (Alternative tab) */
+    .bulk-box textarea {
       width: 100%;
       min-height: 140px;
-      background: #0c0e16;
+      background: #0d0f17;
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 14px;
@@ -129,54 +244,14 @@
       resize: vertical;
       line-height: 1.5;
       font-family: monospace;
-      transition: all 0.2s;
     }
 
-    textarea:focus {
+    .bulk-box textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(225, 48, 108, 0.25);
+      box-shadow: 0 0 0 3px rgba(225, 48, 108, 0.2);
     }
 
-    .btn-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-paste {
-      background: #1c2130;
-      border: 1px solid #2d354a;
-      color: #e5e7eb;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .btn-paste:hover {
-      background: #2b3348;
-    }
-
-    .btn-clear {
-      background: transparent;
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-clear:hover {
-      color: #fff;
-      border-color: #4b5563;
-    }
-
+    /* Main Action Button */
     .btn-download-all {
       width: 100%;
       background: var(--gradient);
@@ -193,6 +268,7 @@
       gap: 10px;
       box-shadow: 0 6px 20px rgba(220, 39, 67, 0.4);
       transition: all 0.2s;
+      margin-top: 4px;
     }
 
     .btn-download-all:hover:not(:disabled) {
@@ -206,22 +282,22 @@
       transform: none;
     }
 
-    /* Batch Progress Card */
+    /* Progress & Queue Section */
     .progress-card {
-      background: #0f121b;
+      background: #0d0f17;
       border: 1px solid var(--card-border);
       border-radius: 14px;
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .progress-header {
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .progress-bar-bg {
@@ -240,32 +316,27 @@
       transition: width 0.3s ease;
     }
 
-    /* Queue items */
     .queue-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 280px;
-      overflow-y: auto;
     }
 
     .queue-item {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 8px;
       padding: 10px 12px;
       background: #141824;
-      border: 1px solid var(--card-border);
+      border: 1px solid #22293b;
       border-radius: 10px;
       font-size: 12px;
     }
 
-    .queue-item-info {
+    .queue-item-row {
       display: flex;
       align-items: center;
-      gap: 8px;
-      overflow: hidden;
-      max-width: 70%;
+      justify-content: space-between;
     }
 
     .queue-status-badge {
@@ -273,7 +344,6 @@
       font-weight: 700;
       padding: 2px 6px;
       border-radius: 4px;
-      white-space: nowrap;
     }
 
     .status-waiting { background: #1e2436; color: #94a3b8; }
@@ -281,11 +351,11 @@
     .status-done { background: rgba(16, 185, 129, 0.2); color: #34d399; }
     .status-fail { background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
-    .queue-url {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #cbd5e1;
+    .video-preview-mini {
+      width: 100%;
+      max-height: 240px;
+      border-radius: 8px;
+      background: #000;
     }
 
     /* Quick Actions */
@@ -315,7 +385,6 @@
 
     .btn-action:hover {
       background: #232a3f;
-      border-color: #3b455f;
     }
 
     .btn-zip {
@@ -324,8 +393,24 @@
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
-    .btn-zip:hover {
-      background: linear-gradient(135deg, #059669, #047857);
+    .btn-sm {
+      background: #202638;
+      border: 1px solid #313b52;
+      color: #e5e7eb;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-sm:hover {
+      background: #2b354d;
+      color: #fff;
     }
 
     /* History */
@@ -333,18 +418,18 @@
       background: var(--card);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 16px;
     }
 
     .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .history-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: #fff;
     }
@@ -353,7 +438,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      max-height: 220px;
+      max-height: 200px;
       overflow-y: auto;
     }
 
@@ -370,27 +455,10 @@
 
     .history-name {
       color: #e2e8f0;
-      max-width: 60%;
+      max-width: 55%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .btn-sm {
-      background: #242938;
-      border: 1px solid #374151;
-      color: #e5e7eb;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .btn-sm:hover {
-      background: #374151;
-      color: #fff;
     }
 
     .spinner {
@@ -403,6 +471,8 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -410,35 +480,50 @@
   <div class="container">
     <!-- Header -->
     <header class="header">
-      <div class="badge">🚀 Download Rápido & Sem Limites</div>
+      <div class="badge">⚡ Downloader Reels MP4</div>
       <h1 class="title">InstaReels Downloader</h1>
-      <p class="subtitle">Cole 1, 5 ou 20 links do Instagram e baixe todos os vídeos em MP4 de uma vez.</p>
+      <p class="subtitle">Baixe um ou vários vídeos do Instagram em MP4 com áudio e vídeo completos.</p>
     </header>
 
     <!-- Main Card -->
     <main class="card">
-      <div class="input-header">
-        <label for="urlsInput" class="input-label">Cole os links do Instagram (1 por linha):</label>
-        <span id="linkCountBadge" class="counter-badge">0 links</span>
+      <!-- Mode Tabs -->
+      <div class="tab-bar">
+        <button id="tabFields" class="tab-btn active">➕ Por Campos de Link</button>
+        <button id="tabBulk" class="tab-btn">📋 Colar Lista (Texto)</button>
       </div>
 
-      <textarea 
-        id="urlsInput" 
-        placeholder="https://www.instagram.com/reel/C8XYZ...&#10;https://www.instagram.com/reel/C9ABC...&#10;https://www.instagram.com/p/D123..."
-        autocomplete="off"
-        spellcheck="false"
-      ></textarea>
+      <!-- Mode 1: Dynamic Rows (Fields) -->
+      <div id="fieldsContainer">
+        <div id="linkRows" class="link-list">
+          <!-- Row 1 (default) -->
+          <div class="link-item" id="row-0">
+            <div class="link-item-top">
+              <span class="link-item-label">Link do Vídeo 1</span>
+            </div>
+            <div class="link-input-row">
+              <input type="text" class="link-input" placeholder="https://www.instagram.com/reel/..." spellcheck="false">
+              <button class="btn-paste-row" onclick="pasteToRow(0)">📋 Colar</button>
+            </div>
+          </div>
+        </div>
 
-      <div class="btn-row">
-        <button id="pasteBtn" class="btn-paste">
-          📋 Colar da Área de Transferência
-        </button>
-        <button id="clearBtn" class="btn-clear">
-          Limpar
+        <button id="btnAddLink" class="btn-add-row" style="margin-top: 10px;">
+          ➕ Adicionar mais um link
         </button>
       </div>
 
-      <button id="downloadAllBtn" class="btn-download-all">
+      <!-- Mode 2: Bulk Textarea -->
+      <div id="bulkContainer" class="bulk-box hidden">
+        <textarea 
+          id="bulkTextarea" 
+          placeholder="Cole vários links aqui (um por linha):&#10;https://www.instagram.com/reel/C8XYZ...&#10;https://www.instagram.com/reel/C9ABC..."
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Action Button -->
+      <button id="downloadBtn" class="btn-download-all">
         <span id="btnIcon">⬇</span>
         <span id="btnText">BAIXAR VÍDEOS</span>
         <div id="btnSpinner" class="spinner hidden"></div>
@@ -453,11 +538,10 @@
         <div class="progress-bar-bg">
           <div id="progressBarFill" class="progress-bar-fill"></div>
         </div>
-
         <div id="queueList" class="queue-list"></div>
       </div>
 
-      <!-- Quick Action Buttons -->
+      <!-- Quick Actions -->
       <div class="actions-grid">
         <a id="btnZipAll" href="/api/download-zip" class="btn-action btn-zip">
           📦 Baixar Todos em .ZIP
@@ -471,7 +555,7 @@
     <!-- History / Files on server -->
     <section class="history-card">
       <div class="history-header">
-        <h2 class="history-title">Vídeos Baixados no Servidor</h2>
+        <h2 class="history-title">Vídeos Salvos no Servidor</h2>
         <button id="refreshBtn" class="btn-sm">🔄 Atualizar</button>
       </div>
       <div id="historyList" class="history-list"></div>
@@ -479,11 +563,14 @@
   </div>
 
   <script>
-    const urlsInput = document.getElementById('urlsInput');
-    const linkCountBadge = document.getElementById('linkCountBadge');
-    const pasteBtn = document.getElementById('pasteBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    const tabFields = document.getElementById('tabFields');
+    const tabBulk = document.getElementById('tabBulk');
+    const fieldsContainer = document.getElementById('fieldsContainer');
+    const bulkContainer = document.getElementById('bulkContainer');
+    const linkRows = document.getElementById('linkRows');
+    const btnAddLink = document.getElementById('btnAddLink');
+    const bulkTextarea = document.getElementById('bulkTextarea');
+    const downloadBtn = document.getElementById('downloadBtn');
     const btnIcon = document.getElementById('btnIcon');
     const btnText = document.getElementById('btnText');
     const btnSpinner = document.getElementById('btnSpinner');
@@ -498,146 +585,197 @@
     const refreshBtn = document.getElementById('refreshBtn');
     const btnClearServer = document.getElementById('btnClearServer');
 
+    let currentMode = 'fields'; // 'fields' or 'bulk'
+    let rowCount = 1;
     let isProcessing = false;
 
-    // Helper to extract clean instagram links
-    function getLinks() {
-      const text = urlsInput.value;
-      const regex = /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|reels|p|tv)\/[A-Za-z0-9_-]+/g;
-      const matches = text.match(regex) || [];
-      // Remove duplicates while preserving order
-      return [...new Set(matches)];
-    }
+    // Tabs switch
+    tabFields.addEventListener('click', () => {
+      currentMode = 'fields';
+      tabFields.classList.add('active');
+      tabBulk.classList.remove('active');
+      fieldsContainer.classList.remove('hidden');
+      bulkContainer.classList.add('hidden');
+    });
 
-    function updateCounter() {
-      const links = getLinks();
-      linkCountBadge.textContent = `${links.length} ${links.length === 1 ? 'link' : 'links'}`;
-      downloadAllBtn.disabled = links.length === 0 || isProcessing;
-    }
+    tabBulk.addEventListener('click', () => {
+      currentMode = 'bulk';
+      tabBulk.classList.add('active');
+      tabFields.classList.remove('active');
+      bulkContainer.classList.remove('hidden');
+      fieldsContainer.classList.add('hidden');
+    });
 
-    urlsInput.addEventListener('input', updateCounter);
+    // Add new row
+    btnAddLink.addEventListener('click', () => {
+      const idx = rowCount++;
+      const item = document.createElement('div');
+      item.className = 'link-item';
+      item.id = `row-${idx}`;
+      item.innerHTML = `
+        <div class="link-item-top">
+          <span class="link-item-label">Link do Vídeo ${idx + 1}</span>
+          <button class="btn-remove-row" onclick="removeRow(${idx})">✕ Remover</button>
+        </div>
+        <div class="link-input-row">
+          <input type="text" class="link-input" placeholder="https://www.instagram.com/reel/..." spellcheck="false">
+          <button class="btn-paste-row" onclick="pasteToRow(${idx})">📋 Colar</button>
+        </div>
+      `;
+      linkRows.appendChild(item);
+      const input = item.querySelector('input');
+      input.focus();
+    });
 
-    // Paste button
-    pasteBtn.addEventListener('click', async () => {
+    window.removeRow = function(idx) {
+      const el = document.getElementById(`row-${idx}`);
+      if (el) el.remove();
+    };
+
+    window.pasteToRow = async function(idx) {
       try {
         const text = await navigator.clipboard.readText();
-        if (text) {
-          if (urlsInput.value.trim()) {
-            urlsInput.value += '\n' + text.trim();
-          } else {
-            urlsInput.value = text.trim();
-          }
-          updateCounter();
+        const row = document.getElementById(`row-${idx}`);
+        if (row && text) {
+          const input = row.querySelector('input');
+          input.value = text.trim();
         }
       } catch (e) {
-        urlsInput.focus();
+        const row = document.getElementById(`row-${idx}`);
+        if (row) row.querySelector('input').focus();
       }
-    });
+    };
 
-    // Clear button
-    clearBtn.addEventListener('click', () => {
-      urlsInput.value = '';
-      updateCounter();
-    });
+    // Collect URLs from active mode
+    function collectUrls() {
+      let urls = [];
+      if (currentMode === 'fields') {
+        const inputs = linkRows.querySelectorAll('.link-input');
+        inputs.forEach(input => {
+          const val = input.value.trim();
+          if (val && val.includes('instagram.com')) {
+            urls.push(val);
+          }
+        });
+      } else {
+        const text = bulkTextarea.value;
+        const regex = /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|reels|p|tv)\/[A-Za-z0-9_-]+/g;
+        urls = text.match(regex) || [];
+      }
+      return [...new Set(urls)];
+    }
 
-    // Batch Download Process
-    downloadAllBtn.addEventListener('click', async () => {
-      const links = getLinks();
-      if (links.length === 0 || isProcessing) return;
+    // Download Handler
+    downloadBtn.addEventListener('click', async () => {
+      const urls = collectUrls();
+      if (urls.length === 0) {
+        alert('Por favor, cole pelo menos um link válido do Instagram.');
+        return;
+      }
+
+      if (isProcessing) return;
 
       isProcessing = true;
-      downloadAllBtn.disabled = true;
+      downloadBtn.disabled = true;
       btnIcon.classList.add('hidden');
       btnSpinner.classList.remove('hidden');
-      btnText.textContent = `BAIXANDO (${links.length} VÍDEOS)...`;
+      btnText.textContent = `BAIXANDO (${urls.length} VÍDEOS)...`;
 
       progressCard.classList.remove('hidden');
       queueList.innerHTML = '';
 
-      // Initialize queue UI
-      const queueItems = links.map((link, idx) => {
+      // Initialize queue
+      const queueItems = urls.map((url, idx) => {
         const div = document.createElement('div');
         div.className = 'queue-item';
-        div.id = `queue-item-${idx}`;
+        div.id = `q-${idx}`;
         div.innerHTML = `
-          <div class="queue-item-info">
+          <div class="queue-item-row">
+            <span style="font-weight:700; color:#fff;">Vídeo ${idx + 1}</span>
             <span class="queue-status-badge status-waiting">Na fila</span>
-            <span class="queue-url" title="${link}">${link}</span>
           </div>
-          <span style="font-size:11px; color:#6b7280;">Aguardando</span>
+          <div style="font-size:11px; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            ${url}
+          </div>
+          <div class="video-container" style="display:none; margin-top:6px;"></div>
         `;
         queueList.appendChild(div);
-        return { link, idx, el: div };
+        return { url, idx, el: div };
       });
 
       let completed = 0;
       let successes = 0;
 
-      // Process links sequentially to respect server and network resources
       for (const item of queueItems) {
-        // Update item to running
         const badge = item.el.querySelector('.queue-status-badge');
-        const detail = item.el.querySelector('span:last-child');
+        const container = item.el.querySelector('.video-container');
+
         badge.className = 'queue-status-badge status-running';
         badge.textContent = 'Baixando...';
-        detail.textContent = 'Conectando...';
 
         try {
           const res = await fetch('/api/download', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: item.link })
+            body: JSON.stringify({ url: item.url })
           });
           const data = await res.json();
 
           if (data && data.success) {
             badge.className = 'queue-status-badge status-done';
-            badge.textContent = '✓ Concluído';
-            detail.innerHTML = `<a href="/videos/${encodeURIComponent(data.filename)}" download class="btn-sm">💾 Baixar (${data.size_mb} MB)</a>`;
+            badge.textContent = `✓ Concluído (${data.size_mb} MB)`;
+
+            // Render video player with controls
+            container.style.display = 'block';
+            container.innerHTML = `
+              <video class="video-preview-mini" controls playsinline>
+                <source src="/videos/${encodeURIComponent(data.filename)}" type="video/mp4">
+              </video>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                <span style="font-size:11px; color:#34d399; font-weight:700;">MP4 Completo (Áudio + Vídeo)</span>
+                <a href="/videos/${encodeURIComponent(data.filename)}" download="${data.filename}" class="btn-sm">💾 Baixar Arquivo</a>
+              </div>
+            `;
             successes++;
           } else {
             badge.className = 'queue-status-badge status-fail';
-            badge.textContent = '✕ Erro';
-            detail.textContent = data.error || 'Falha';
+            badge.textContent = data.error || 'Erro no download';
           }
         } catch (err) {
           badge.className = 'queue-status-badge status-fail';
-          badge.textContent = '✕ Falha de conexão';
-          detail.textContent = 'Erro de rede';
+          badge.textContent = 'Falha de rede';
         }
 
         completed++;
-        const pct = Math.round((completed / links.length) * 100);
-        progressSummary.textContent = `Progresso: ${completed} de ${links.length} (${successes} com sucesso)`;
+        const pct = Math.round((completed / urls.length) * 100);
+        progressSummary.textContent = `Progresso: ${completed} de ${urls.length} (${successes} com sucesso)`;
         progressPercent.textContent = `${pct}%`;
         progressBarFill.style.width = `${pct}%`;
       }
 
-      // Finish
       isProcessing = false;
-      downloadAllBtn.disabled = false;
+      downloadBtn.disabled = false;
       btnIcon.classList.remove('hidden');
       btnSpinner.classList.add('hidden');
-      btnText.textContent = `BAIXAR VÍDEOS`;
+      btnText.textContent = 'BAIXAR VÍDEOS';
       loadHistory();
     });
 
-    // Clear server files
+    // Clear server
     btnClearServer.addEventListener('click', async () => {
-      if (confirm('Deseja apagar os vídeos baixados da pasta para liberar espaço?')) {
+      if (confirm('Deseja apagar os vídeos da pasta do servidor para liberar espaço?')) {
         await fetch('/api/clear-videos', { method: 'POST' });
         loadHistory();
       }
     });
 
-    // Load History
+    // History
     async function loadHistory() {
       try {
         const res = await fetch('/api/videos');
         const videos = await res.json();
-
         if (!videos || videos.length === 0) {
-          historyList.innerHTML = '<div style="color:#6b7280; font-size:12px; text-align:center; padding:12px;">Nenhum vídeo salvo na pasta.</div>';
+          historyList.innerHTML = '<div style="color:#6b7280; font-size:11px; text-align:center; padding:10px;">Nenhum vídeo salvo no servidor.</div>';
           return;
         }
 
@@ -658,7 +796,6 @@
     }
 
     refreshBtn.addEventListener('click', loadHistory);
-    updateCounter();
     loadHistory();
   </script>
 </body>

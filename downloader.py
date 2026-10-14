@@ -1,6 +1,8 @@
 import os
+import sys
 import re
 import time
+import shutil
 import imageio_ffmpeg
 import yt_dlp
 
@@ -12,14 +14,48 @@ class InstagramDownloader:
             self.output_dir = output_dir
 
         os.makedirs(self.output_dir, exist_ok=True)
-        self.ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+        self.ffmpeg_path = self._ensure_ffmpeg_binary()
+
+    def _ensure_ffmpeg_binary(self):
+        """
+        Ensures an executable named 'ffmpeg' (or 'ffmpeg.exe') exists so yt-dlp can find it.
+        """
+        # 1. Check if ffmpeg is already on system PATH
+        system_ffmpeg = shutil.which("ffmpeg")
+        if system_ffmpeg:
+            return system_ffmpeg
+
+        # 2. Use imageio_ffmpeg binary and make sure an alias named 'ffmpeg' exists
+        try:
+            raw_exe = imageio_ffmpeg.get_ffmpeg_exe()
+            raw_dir = os.path.dirname(raw_exe)
+            clean_name = "ffmpeg.exe" if os.name == "nt" else "ffmpeg"
+            target_exe = os.path.join(raw_dir, clean_name)
+
+            if not os.path.exists(target_exe):
+                try:
+                    shutil.copyfile(raw_exe, target_exe)
+                    # make executable on linux
+                    if os.name != "nt":
+                        os.chmod(target_exe, 0o755)
+                except Exception as e:
+                    print(f"Aviso ao copiar ffmpeg: {e}")
+                    target_exe = raw_exe
+
+            # Prepend raw_dir to PATH so subprocesses find ffmpeg
+            if raw_dir not in os.environ.get("PATH", ""):
+                os.environ["PATH"] = raw_dir + os.pathsep + os.environ.get("PATH", "")
+
+            return target_exe
+        except Exception as e:
+            print(f"Erro ao obter imageio_ffmpeg: {e}")
+            return "ffmpeg"
 
     def extract_shortcode(self, url):
         match = re.search(r'/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)', url)
         return match.group(1) if match else None
 
     def clean_url(self, url):
-        # Strips tracking parameters from url
         match = re.search(r'(https?://(?:www\.)?instagram\.com/(?:reel|reels|p|tv)/[A-Za-z0-9_-]+)', url)
         if match:
             return match.group(1) + "/"
@@ -27,9 +63,7 @@ class InstagramDownloader:
 
     def download_video(self, url, progress_callback=None):
         """
-        Downloads the video from the Instagram URL.
-        progress_callback: function(percent: float, status_str: str)
-        Returns: dict with details (filepath, title, shortcode, duration, etc.)
+        Downloads video and audio merged into standard H.264 / AAC MP4.
         """
         url = self.clean_url(url)
         shortcode = self.extract_shortcode(url) or f"video_{int(time.time())}"
@@ -42,28 +76,25 @@ class InstagramDownloader:
                 if status == 'downloading':
                     total_bytes = d.get('total_bytes') or d.get('total_bytes_estimate') or 0
                     downloaded = d.get('downloaded_bytes', 0)
-                    speed = d.get('speed') or 0
-                    
-                    if total_bytes > 0:
-                        percent = (downloaded / total_bytes) * 100.0
-                    else:
-                        percent = 0.0
-
-                    speed_mb = speed / (1024 * 1024) if speed else 0
-                    msg = f"Baixando: {percent:.1f}% ({speed_mb:.2f} MB/s)"
-                    progress_callback(percent, msg)
+                    percent = (downloaded / total_bytes * 100.0) if total_bytes > 0 else 0.0
+                    progress_callback(percent, f"Baixando: {percent:.1f}%")
                 elif status == 'finished':
-                    progress_callback(100.0, "Processando e finalizando o arquivo MP4...")
+                    progress_callback(100.0, "Juntando áudio e vídeo em MP4...")
 
         ydl_opts = {
             'outtmpl': out_template,
-            'format': 'bestvideo+bestaudio/best',
+            # Best format: prioritize AVC/H.264 for mobile compatibility (iPhone/Android)
+            'format': 'bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best',
             'merge_output_format': 'mp4',
             'ffmpeg_location': self.ffmpeg_path,
             'progress_hooks': [ydl_hook],
             'quiet': True,
             'no_warnings': True,
             'noplaylist': True,
+            'postprocessors': [{
+                'key': 'FFmpegVideoConvertor',
+                'preferedformat': 'mp4',
+            }],
             'http_headers': {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -78,7 +109,6 @@ class InstagramDownloader:
                 info = ydl.extract_info(url, download=True)
                 downloaded_file = ydl.prepare_filename(info)
 
-                # Ensure filename has .mp4
                 base, _ = os.path.splitext(downloaded_file)
                 mp4_file = base + ".mp4"
                 final_file = mp4_file if os.path.exists(mp4_file) else downloaded_file
@@ -91,7 +121,6 @@ class InstagramDownloader:
                     "filename": os.path.basename(final_file),
                     "shortcode": shortcode,
                     "title": info.get('title') or f"Reel {shortcode}",
-                    "duration": info.get('duration', 0),
                     "size_mb": round(file_size_mb, 2)
                 }
 
