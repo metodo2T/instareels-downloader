@@ -733,7 +733,7 @@
               </video>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
                 <span style="font-size:11px; color:#34d399; font-weight:700;">MP4 Completo (Áudio + Vídeo)</span>
-                <a href="/videos/${encodeURIComponent(data.filename)}" download="${data.filename}" class="btn-sm">💾 Baixar Arquivo</a>
+                <a href="/videos/${encodeURIComponent(data.filename)}?download=1" download="${data.filename}" class="btn-sm">💾 Baixar Arquivo</a>
               </div>
             `;
             successes++;
@@ -787,7 +787,7 @@
             <div class="history-name" title="${v.name}">${v.name}</div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:11px; color:#6b7280;">${v.size_mb} MB</span>
-              <a href="/videos/${encodeURIComponent(v.name)}" download="${v.name}" class="btn-sm">⬇ Baixar</a>
+              <a href="/videos/${encodeURIComponent(v.name)}?download=1" download="${v.name}" class="btn-sm">⬇ Baixar</a>
             </div>
           `;
           historyList.appendChild(item);

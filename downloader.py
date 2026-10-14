@@ -3,6 +3,7 @@ import sys
 import re
 import time
 import shutil
+import subprocess
 import imageio_ffmpeg
 import yt_dlp
 
@@ -17,15 +18,10 @@ class InstagramDownloader:
         self.ffmpeg_path = self._ensure_ffmpeg_binary()
 
     def _ensure_ffmpeg_binary(self):
-        """
-        Ensures an executable named 'ffmpeg' (or 'ffmpeg.exe') exists so yt-dlp can find it.
-        """
-        # 1. Check if ffmpeg is already on system PATH
         system_ffmpeg = shutil.which("ffmpeg")
         if system_ffmpeg:
             return system_ffmpeg
 
-        # 2. Use imageio_ffmpeg binary and make sure an alias named 'ffmpeg' exists
         try:
             raw_exe = imageio_ffmpeg.get_ffmpeg_exe()
             raw_dir = os.path.dirname(raw_exe)
@@ -35,20 +31,16 @@ class InstagramDownloader:
             if not os.path.exists(target_exe):
                 try:
                     shutil.copyfile(raw_exe, target_exe)
-                    # make executable on linux
                     if os.name != "nt":
                         os.chmod(target_exe, 0o755)
                 except Exception as e:
-                    print(f"Aviso ao copiar ffmpeg: {e}")
                     target_exe = raw_exe
 
-            # Prepend raw_dir to PATH so subprocesses find ffmpeg
             if raw_dir not in os.environ.get("PATH", ""):
                 os.environ["PATH"] = raw_dir + os.pathsep + os.environ.get("PATH", "")
 
             return target_exe
-        except Exception as e:
-            print(f"Erro ao obter imageio_ffmpeg: {e}")
+        except Exception:
             return "ffmpeg"
 
     def extract_shortcode(self, url):
@@ -61,13 +53,56 @@ class InstagramDownloader:
             return match.group(1) + "/"
         return url.strip()
 
+    def _ensure_h264_compatibility(self, filepath):
+        """
+        Inspects the video file. If it uses VP9, AV1, or lacks video stream,
+        re-encodes to H.264 (avc1) + AAC for 100% iPhone/Android compatibility.
+        """
+        if not os.path.exists(filepath):
+            return filepath
+
+        try:
+            # Check video stream codecs using ffmpeg -i
+            probe_cmd = [self.ffmpeg_path, "-i", filepath]
+            probe_res = subprocess.run(probe_cmd, stderr=subprocess.PIPE, text=True, errors="ignore")
+            probe_text = probe_res.stderr
+
+            needs_transcode = False
+            # If video has VP9 or AV1, iPhone CANNOT play the video (only audio plays!)
+            if "Video: vp9" in probe_text or "Video: av01" in probe_text or "Video: av1" in probe_text:
+                needs_transcode = True
+            elif "Video:" not in probe_text:
+                needs_transcode = True
+
+            if needs_transcode:
+                print(f"[InstagramDownloader] Detectado codec incompatível (VP9/AV1). Convertendo para H.264 Universal...")
+                temp_out = filepath.replace(".mp4", "_h264.mp4")
+                convert_cmd = [
+                    self.ffmpeg_path,
+                    "-y",
+                    "-i", filepath,
+                    "-c:v", "libx264",
+                    "-preset", "veryfast",
+                    "-crf", "22",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "128k",
+                    "-movflags", "+faststart",
+                    temp_out
+                ]
+                subprocess.run(convert_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+
+                if os.path.exists(temp_out) and os.path.getsize(temp_out) > 1000:
+                    os.replace(temp_out, filepath)
+                    print(f"[InstagramDownloader] Vídeo convertido com sucesso para H.264!")
+        except Exception as e:
+            print(f"[InstagramDownloader] Aviso na conversão H.264: {e}")
+
+        return filepath
+
     def download_video(self, url, progress_callback=None):
-        """
-        Downloads video and audio merged into standard H.264 / AAC MP4.
-        """
         url = self.clean_url(url)
         shortcode = self.extract_shortcode(url) or f"video_{int(time.time())}"
-        
         out_template = os.path.join(self.output_dir, f"Reel_{shortcode}_%(id)s.%(ext)s")
 
         def ydl_hook(d):
@@ -79,24 +114,20 @@ class InstagramDownloader:
                     percent = (downloaded / total_bytes * 100.0) if total_bytes > 0 else 0.0
                     progress_callback(percent, f"Baixando: {percent:.1f}%")
                 elif status == 'finished':
-                    progress_callback(100.0, "Juntando áudio e vídeo em MP4...")
+                    progress_callback(95.0, "Otimizando vídeo para celular (H.264)...")
 
+        # Prioritize H.264 (avc1) first, fallback to best
         ydl_opts = {
             'outtmpl': out_template,
-            # Best format: prioritize AVC/H.264 for mobile compatibility (iPhone/Android)
-            'format': 'bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best',
+            'format': 'bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best',
             'merge_output_format': 'mp4',
             'ffmpeg_location': self.ffmpeg_path,
             'progress_hooks': [ydl_hook],
             'quiet': True,
             'no_warnings': True,
             'noplaylist': True,
-            'postprocessors': [{
-                'key': 'FFmpegVideoConvertor',
-                'preferedformat': 'mp4',
-            }],
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
                 'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
             }
         }
@@ -112,6 +143,9 @@ class InstagramDownloader:
                 base, _ = os.path.splitext(downloaded_file)
                 mp4_file = base + ".mp4"
                 final_file = mp4_file if os.path.exists(mp4_file) else downloaded_file
+
+                # Guarantee H.264 format so video always appears on iPhone & Android
+                final_file = self._ensure_h264_compatibility(final_file)
 
                 file_size_mb = os.path.getsize(final_file) / (1024 * 1024) if os.path.exists(final_file) else 0
 

@@ -58,7 +58,14 @@ def api_videos():
 
 @app.route('/videos/<path:filename>')
 def serve_video(filename):
-    return send_from_directory(VIDEOS_DIR, filename, as_attachment=True)
+    download = request.args.get('download', '0') == '1'
+    return send_from_directory(
+        VIDEOS_DIR, 
+        filename, 
+        as_attachment=download,
+        mimetype='video/mp4',
+        conditional=True
+    )
 
 @app.route('/api/download-zip', methods=['GET'])
 def download_zip():
