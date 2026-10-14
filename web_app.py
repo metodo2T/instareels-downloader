@@ -105,16 +105,20 @@ def api_render_creative():
             handle=data.get('handle', '@brunocesar.2t'),
             headline=data.get('headline', 'A headline aqui...'),
             avatar_path=data.get('avatar_path'),
-            verified=data.get('verified', True),
-            video_w=int(data.get('video_w', 880)),
-            video_h=int(data.get('video_h', 760)),
-            video_y=data.get('video_y'),
+            verified=bool(data.get('verified', True)),
+            header_y=int(data.get('header_y', 430)),
+            headline_y=int(data.get('headline_y', 640)),
+            headline_size=int(data.get('headline_size', 44)),
+            video_w=int(data.get('video_w', 864)),
+            video_h=int(data.get('video_h', 740)),
+            video_y=int(data.get('video_y', 890)),
             video_zoom=float(data.get('video_zoom', 1.0)),
             video_pan_x=float(data.get('video_pan_x', 0.5)),
             video_pan_y=float(data.get('video_pan_y', 0.5)),
-            corner_radius=int(data.get('corner_radius', 32)),
+            corner_radius=int(data.get('corner_radius', 36)),
             watermark_text=data.get('watermark_text', '@brunocesar.2t'),
-            watermark_opacity=float(data.get('watermark_opacity', 0.35))
+            watermark_opacity=float(data.get('watermark_opacity', 0.35)),
+            watermark_y_offset=int(data.get('watermark_y_offset', 0))
         )
         return jsonify(render_res)
     except Exception as e:

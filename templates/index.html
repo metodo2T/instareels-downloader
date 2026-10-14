@@ -235,47 +235,46 @@
 
     .reels-canvas {
       width: 320px;
-      height: 568px; /* 9:16 ratio scaled down from 1080x1920 (factor ~3.38) */
+      height: 569px; /* 320 * (1920/1080) = 568.88px */
       background: #ffffff;
-      border-radius: 24px;
+      border-radius: 20px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
       position: relative;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       user-select: none;
     }
 
     /* Twitter Profile Header inside Canvas */
     .canvas-header {
-      width: 260px; /* ~880px scaled */
+      position: absolute;
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-top: 110px; /* ~380px scaled */
+      box-sizing: border-box;
+      pointer-events: none;
     }
 
     .canvas-avatar-box {
       position: relative;
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       flex-shrink: 0;
     }
 
     .canvas-avatar-img {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       object-fit: cover;
+      border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .canvas-verified-badge {
       position: absolute;
-      top: -2px;
-      right: -4px;
-      width: 14px;
-      height: 14px;
+      top: -1px;
+      right: -3px;
+      width: 12px;
+      height: 12px;
     }
 
     .canvas-names {
@@ -287,7 +286,7 @@
     .canvas-name {
       font-size: 11px;
       font-weight: 800;
-      color: #000;
+      color: #000000;
       line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
@@ -295,35 +294,33 @@
     }
 
     .canvas-handle {
-      font-size: 9px;
-      color: #65676b;
+      font-size: 8px;
+      color: #6b7280;
       margin-top: 2px;
     }
 
     /* Headline inside Canvas */
     .canvas-headline {
-      width: 260px;
-      margin-top: 12px;
-      font-size: 13px;
+      position: absolute;
       font-weight: 800;
-      color: #000;
+      color: #000000;
       line-height: 1.35;
       white-space: pre-line;
       text-align: left;
+      box-sizing: border-box;
+      pointer-events: none;
+      word-break: break-word;
     }
 
     /* Video Frame inside Canvas */
     .canvas-video-box {
-      width: 260px;
-      height: 230px;
-      margin-top: 12px;
-      position: relative;
-      border-radius: 10px;
+      position: absolute;
       overflow: hidden;
-      background: #000;
+      background: #000000;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-sizing: border-box;
     }
 
     .canvas-video-player {
@@ -335,14 +332,15 @@
 
     .canvas-watermark {
       position: absolute;
-      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: rgba(255, 255, 255, 0.4);
+      color: #ffffff;
       font-size: 11px;
       font-weight: 800;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
       pointer-events: none;
+      white-space: nowrap;
+      user-select: none;
     }
 
     /* Controls Panel */
@@ -582,11 +580,16 @@ A headline aqui a headline aqui</div>
 
       <!-- 3. Customization Controls -->
       <div class="card controls-card">
-        <div class="section-title">2. Personalize o Perfil & Texto</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="section-title">2. Textos & Perfil</div>
+          <button id="btnResetDefaults" class="btn-sm" style="background:#1e2436; color:#38bdf8; border:1px solid #38bdf8; cursor:pointer;">
+            ↺ Restaurar Posições da Foto
+          </button>
+        </div>
 
         <!-- Avatar, Name, Handle, Verified -->
         <div class="control-group">
-          <label class="control-label">Foto de Perfil:</label>
+          <label class="control-label">Foto de Perfil & Verificado:</label>
           <div class="control-row">
             <label class="btn-upload-avatar">
               📷 Trocar Foto de Perfil
@@ -615,33 +618,78 @@ A headline aqui a headline aqui
 A headline aqui a headline aqui</textarea>
         </div>
 
-        <div class="section-title" style="margin-top:10px;">3. Recorte & Redimensionamento Livre do Vídeo</div>
+        <div class="control-group">
+          <label class="control-label">Marca D'água (Arroba sobre o vídeo):</label>
+          <input type="text" id="inputWatermark" value="@brunocesar.2t">
+        </div>
+      </div>
+
+      <!-- 4. Posições dos Elementos Card -->
+      <div class="card controls-card">
+        <div class="section-title">3. Posições dos Elementos (Todos Editáveis)</div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Posição Vertical do Perfil (Header Y):</span>
+            <span id="valHeaderY">430px</span>
+          </div>
+          <input type="range" id="sliderHeaderY" min="200" max="650" value="430">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Posição Vertical da Headline (Headline Y):</span>
+            <span id="valHeadlineY">640px</span>
+          </div>
+          <input type="range" id="sliderHeadlineY" min="450" max="850" value="640">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Tamanho da Fonte da Headline:</span>
+            <span id="valHeadlineSize">44px</span>
+          </div>
+          <input type="range" id="sliderHeadlineSize" min="26" max="64" value="44">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Posição Vertical do Vídeo (Video Y):</span>
+            <span id="valVideoY">890px</span>
+          </div>
+          <input type="range" id="sliderVideoY" min="650" max="1200" value="890">
+        </div>
+      </div>
+
+      <!-- 5. Recorte & Dimensões do Vídeo Card -->
+      <div class="card controls-card">
+        <div class="section-title">4. Recorte & Dimensões do Vídeo</div>
 
         <!-- Presets -->
         <div class="control-group">
-          <label class="control-label">Formato do Vídeo:</label>
-          <div class="control-row">
-            <button class="btn-preset active" data-w="880" data-h="760">4:5 (Retângulo)</button>
-            <button class="btn-preset" data-w="880" data-h="880">1:1 (Quadrado)</button>
-            <button class="btn-preset" data-w="880" data-h="580">16:9 (Horizontal)</button>
+          <label class="control-label">Formatos Pré-definidos:</label>
+          <div class="control-row" style="flex-wrap: wrap; gap:6px;">
+            <button class="btn-preset active" data-w="864" data-h="740" data-y="890">📸 Padrão Foto (864x740)</button>
+            <button class="btn-preset" data-w="864" data-h="864" data-y="850">🔲 1:1 Quadrado</button>
+            <button class="btn-preset" data-w="864" data-h="950" data-y="820">📱 4:5 Vertical</button>
+            <button class="btn-preset" data-w="864" data-h="540" data-y="920">📺 16:9 Horizontal</button>
           </div>
-        </div>
-
-        <!-- Sliders -->
-        <div class="control-group">
-          <div class="control-label">
-            <span>Altura do Vídeo:</span>
-            <span id="valHeight">760px</span>
-          </div>
-          <input type="range" id="sliderHeight" min="400" max="1100" value="760">
         </div>
 
         <div class="control-group">
           <div class="control-label">
             <span>Largura do Vídeo:</span>
-            <span id="valWidth">880px</span>
+            <span id="valWidth">864px</span>
           </div>
-          <input type="range" id="sliderWidth" min="650" max="960" value="880">
+          <input type="range" id="sliderWidth" min="600" max="980" value="864">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Altura do Vídeo:</span>
+            <span id="valHeight">740px</span>
+          </div>
+          <input type="range" id="sliderHeight" min="400" max="1100" value="740">
         </div>
 
         <div class="control-group">
@@ -649,20 +697,31 @@ A headline aqui a headline aqui</textarea>
             <span>Zoom / Enquadramento (Cortar Bordas):</span>
             <span id="valZoom">1.0x</span>
           </div>
-          <input type="range" id="sliderZoom" min="1.0" max="2.2" step="0.05" value="1.0">
+          <input type="range" id="sliderZoom" min="1.0" max="2.5" step="0.05" value="1.0">
         </div>
 
         <div class="control-group">
           <div class="control-label">
             <span>Cantos Arredondados:</span>
-            <span id="valRadius">32px</span>
+            <span id="valRadius">36px</span>
           </div>
-          <input type="range" id="sliderRadius" min="0" max="50" value="32">
+          <input type="range" id="sliderRadius" min="0" max="60" value="36">
         </div>
 
         <div class="control-group">
-          <label class="control-label">Marca D'água sobre o Vídeo:</label>
-          <input type="text" id="inputWatermark" value="@brunocesar.2t">
+          <div class="control-label">
+            <span>Posição Y da Marca D'água:</span>
+            <span id="valWatermarkY">0px</span>
+          </div>
+          <input type="range" id="sliderWatermarkY" min="-250" max="250" value="0">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Opacidade da Marca D'água:</span>
+            <span id="valWatermarkOpacity">35%</span>
+          </div>
+          <input type="range" id="sliderWatermarkOpacity" min="10" max="90" value="35">
         </div>
 
         <!-- Export Action -->
@@ -865,7 +924,10 @@ A headline aqui a headline aqui</textarea>
     const videoSelect = document.getElementById('videoSelect');
     const videoFileInput = document.getElementById('videoFileInput');
     const previewVideoPlayer = document.getElementById('previewVideoPlayer');
+    const canvasHeader = document.getElementById('canvasHeader');
+    const canvasHeadline = document.getElementById('canvasHeadline');
     const canvasVideoBox = document.getElementById('canvasVideoBox');
+    const previewWatermark = document.getElementById('previewWatermark');
 
     const inputName = document.getElementById('inputName');
     const inputHandle = document.getElementById('inputHandle');
@@ -873,23 +935,37 @@ A headline aqui a headline aqui</textarea>
     const checkVerified = document.getElementById('checkVerified');
     const inputWatermark = document.getElementById('inputWatermark');
     const avatarFileInput = document.getElementById('avatarFileInput');
+    const btnResetDefaults = document.getElementById('btnResetDefaults');
 
     const previewName = document.getElementById('previewName');
     const previewHandle = document.getElementById('previewHandle');
     const previewHeadline = document.getElementById('previewHeadline');
     const previewBadge = document.getElementById('previewBadge');
     const previewAvatar = document.getElementById('previewAvatar');
-    const previewWatermark = document.getElementById('previewWatermark');
 
-    const sliderHeight = document.getElementById('sliderHeight');
+    // Position & Size Sliders
+    const sliderHeaderY = document.getElementById('sliderHeaderY');
+    const sliderHeadlineY = document.getElementById('sliderHeadlineY');
+    const sliderHeadlineSize = document.getElementById('sliderHeadlineSize');
+    const sliderVideoY = document.getElementById('sliderVideoY');
     const sliderWidth = document.getElementById('sliderWidth');
+    const sliderHeight = document.getElementById('sliderHeight');
     const sliderZoom = document.getElementById('sliderZoom');
     const sliderRadius = document.getElementById('sliderRadius');
+    const sliderWatermarkY = document.getElementById('sliderWatermarkY');
+    const sliderWatermarkOpacity = document.getElementById('sliderWatermarkOpacity');
 
-    const valHeight = document.getElementById('valHeight');
+    // Indicator Labels
+    const valHeaderY = document.getElementById('valHeaderY');
+    const valHeadlineY = document.getElementById('valHeadlineY');
+    const valHeadlineSize = document.getElementById('valHeadlineSize');
+    const valVideoY = document.getElementById('valVideoY');
     const valWidth = document.getElementById('valWidth');
+    const valHeight = document.getElementById('valHeight');
     const valZoom = document.getElementById('valZoom');
     const valRadius = document.getElementById('valRadius');
+    const valWatermarkY = document.getElementById('valWatermarkY');
+    const valWatermarkOpacity = document.getElementById('valWatermarkOpacity');
 
     const btnRenderCreative = document.getElementById('btnRenderCreative');
     const renderIcon = document.getElementById('renderIcon');
@@ -998,42 +1074,103 @@ A headline aqui a headline aqui</textarea>
       previewWatermark.textContent = inputWatermark.value || '';
     });
 
-    // Video Size & Crop Sliders Sync
+    // Master Live Canvas Preview Synchronizer (1080x1920 scaled down by factor 320 / 1080)
     function updateCanvasLayout() {
-      const wVal = parseInt(sliderWidth.value);
-      const hVal = parseInt(sliderHeight.value);
-      const zoomVal = parseFloat(sliderZoom.value);
-      const radiusVal = parseInt(sliderRadius.value);
+      const headerY = parseInt(sliderHeaderY.value);
+      const headlineY = parseInt(sliderHeadlineY.value);
+      const headlineSize = parseInt(sliderHeadlineSize.value);
+      const videoY = parseInt(sliderVideoY.value);
+      const videoW = parseInt(sliderWidth.value);
+      const videoH = parseInt(sliderHeight.value);
+      const videoZoom = parseFloat(sliderZoom.value);
+      const cornerRadius = parseInt(sliderRadius.value);
+      const wmY = parseInt(sliderWatermarkY.value);
+      const wmOpacity = parseInt(sliderWatermarkOpacity.value) / 100;
 
-      valWidth.textContent = `${wVal}px`;
-      valHeight.textContent = `${hVal}px`;
-      valZoom.textContent = `${zoomVal.toFixed(1)}x`;
-      valRadius.textContent = `${radiusVal}px`;
+      // Update label displays
+      valHeaderY.textContent = `${headerY}px`;
+      valHeadlineY.textContent = `${headlineY}px`;
+      valHeadlineSize.textContent = `${headlineSize}px`;
+      valVideoY.textContent = `${videoY}px`;
+      valWidth.textContent = `${videoW}px`;
+      valHeight.textContent = `${videoH}px`;
+      valZoom.textContent = `${videoZoom.toFixed(1)}x`;
+      valRadius.textContent = `${cornerRadius}px`;
+      valWatermarkY.textContent = `${wmY}px`;
+      valWatermarkOpacity.textContent = `${sliderWatermarkOpacity.value}%`;
 
-      // Scale to canvas visual size (~3.38 scale down factor)
+      // Scale factor: 320 / 1080
       const visualScale = 320 / 1080;
-      canvasVideoBox.style.width = `${Math.round(wVal * visualScale)}px`;
-      canvasVideoBox.style.height = `${Math.round(hVal * visualScale)}px`;
-      canvasVideoBox.style.borderRadius = `${Math.round(radiusVal * visualScale)}px`;
+      const marginX = Math.round(((1080 - videoW) / 2) * visualScale);
+      const scaledW = Math.round(videoW * visualScale);
 
-      // Apply zoom to player
-      previewVideoPlayer.style.transform = `scale(${zoomVal})`;
+      // 1. Header Position
+      canvasHeader.style.top = `${Math.round(headerY * visualScale)}px`;
+      canvasHeader.style.left = `${marginX}px`;
+      canvasHeader.style.width = `${scaledW}px`;
+
+      // 2. Headline Position & Size
+      canvasHeadline.style.top = `${Math.round(headlineY * visualScale)}px`;
+      canvasHeadline.style.left = `${marginX}px`;
+      canvasHeadline.style.width = `${scaledW}px`;
+      canvasHeadline.style.fontSize = `${Math.round(headlineSize * visualScale)}px`;
+
+      // 3. Video Box Position & Size
+      canvasVideoBox.style.top = `${Math.round(videoY * visualScale)}px`;
+      canvasVideoBox.style.left = `${marginX}px`;
+      canvasVideoBox.style.width = `${scaledW}px`;
+      canvasVideoBox.style.height = `${Math.round(videoH * visualScale)}px`;
+      canvasVideoBox.style.borderRadius = `${Math.round(cornerRadius * visualScale)}px`;
+
+      // 4. Video Zoom
+      previewVideoPlayer.style.transform = `scale(${videoZoom})`;
+
+      // 5. Watermark Position & Opacity
+      previewWatermark.style.top = `calc(50% + ${Math.round(wmY * visualScale)}px)`;
+      previewWatermark.style.opacity = wmOpacity;
     }
 
-    sliderWidth.addEventListener('input', updateCanvasLayout);
-    sliderHeight.addEventListener('input', updateCanvasLayout);
-    sliderZoom.addEventListener('input', updateCanvasLayout);
-    sliderRadius.addEventListener('input', updateCanvasLayout);
+    // Attach listener to all sliders
+    [
+      sliderHeaderY, sliderHeadlineY, sliderHeadlineSize, sliderVideoY,
+      sliderWidth, sliderHeight, sliderZoom, sliderRadius,
+      sliderWatermarkY, sliderWatermarkOpacity
+    ].forEach(slider => {
+      slider.addEventListener('input', updateCanvasLayout);
+    });
+
+    // Reset button to photo default values
+    function resetToPhotoDefaults() {
+      sliderHeaderY.value = 430;
+      sliderHeadlineY.value = 640;
+      sliderHeadlineSize.value = 44;
+      sliderVideoY.value = 890;
+      sliderWidth.value = 864;
+      sliderHeight.value = 740;
+      sliderZoom.value = 1.0;
+      sliderRadius.value = 36;
+      sliderWatermarkY.value = 0;
+      sliderWatermarkOpacity.value = 35;
+
+      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+      const firstPreset = document.querySelector('.btn-preset');
+      if (firstPreset) firstPreset.classList.add('active');
+
+      updateCanvasLayout();
+    }
+
+    if (btnResetDefaults) {
+      btnResetDefaults.addEventListener('click', resetToPhotoDefaults);
+    }
 
     // Preset buttons
     document.querySelectorAll('.btn-preset').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const w = parseInt(btn.dataset.w);
-        const h = parseInt(btn.dataset.h);
-        sliderWidth.value = w;
-        sliderHeight.value = h;
+        if (btn.dataset.w) sliderWidth.value = parseInt(btn.dataset.w);
+        if (btn.dataset.h) sliderHeight.value = parseInt(btn.dataset.h);
+        if (btn.dataset.y) sliderVideoY.value = parseInt(btn.dataset.y);
         updateCanvasLayout();
       });
     });
@@ -1058,12 +1195,17 @@ A headline aqui a headline aqui</textarea>
         handle: inputHandle.value.trim(),
         headline: inputHeadline.value.trim(),
         verified: checkVerified.checked,
+        header_y: parseInt(sliderHeaderY.value),
+        headline_y: parseInt(sliderHeadlineY.value),
+        headline_size: parseInt(sliderHeadlineSize.value),
+        video_y: parseInt(sliderVideoY.value),
         video_w: parseInt(sliderWidth.value),
         video_h: parseInt(sliderHeight.value),
         video_zoom: parseFloat(sliderZoom.value),
         corner_radius: parseInt(sliderRadius.value),
         watermark_text: inputWatermark.value.trim(),
-        watermark_opacity: 0.35
+        watermark_opacity: parseInt(sliderWatermarkOpacity.value) / 100,
+        watermark_y_offset: parseInt(sliderWatermarkY.value)
       };
 
       try {
@@ -1099,7 +1241,7 @@ A headline aqui a headline aqui</textarea>
       }
     });
 
-    // Initial setup
+    // Initial setup on page load
     updateCanvasLayout();
   </script>
 </body>

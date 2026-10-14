@@ -28,33 +28,37 @@ class CreativeVideoRenderer:
         self,
         name="Bruno César | Tráfego Pago e Orgânico",
         handle="@brunocesar.2t",
-        headline="A headline aqui a headline aqui\nA headline aqui a headline aqui",
+        headline="A headline aqui a headline aqui\nA headline aqui a headline aqui\nA headline aqui a headline aqui",
         avatar_path=None,
         verified=True,
-        video_w=880,
-        video_h=760,
-        video_y=None,
-        corner_radius=32,
+        header_y=430,
+        headline_y=640,
+        headline_size=44,
+        video_w=864,
+        video_h=740,
+        video_y=890,
+        corner_radius=36,
         watermark_text="@brunocesar.2t",
-        watermark_opacity=0.35
+        watermark_opacity=0.35,
+        watermark_y_offset=0
     ):
         """
-        Creates a 1080x1920 PNG template with Twitter/X card style:
-        - Profile avatar + verified badge
-        - Name + Handle
-        - Headline
-        - Rounded transparent cutout for video
-        - Watermark over video
+        Creates the 1080x1920 PNG template matching the reference layout:
+        - Canvas: 1080 x 1920 (#FFFFFF)
+        - Header Y: 430px
+        - Headline Y: 640px
+        - Video Box: width 864px, height 740px, top Y 890px
+        - Corner radius: 36px
+        - Watermark centered over video
         """
         W, H = 1080, 1920
         margin_x = (W - video_w) // 2
-        start_y = 380
 
         overlay = Image.new("RGBA", (W, H), (255, 255, 255, 255))
         draw = ImageDraw.Draw(overlay)
 
-        # 1. Avatar
-        av_size = 130
+        # 1. Profile Avatar (Diameter 140px)
+        av_size = 140
         av_to_use = avatar_path if (avatar_path and os.path.exists(avatar_path)) else self.default_avatar
 
         if os.path.exists(av_to_use):
@@ -68,9 +72,9 @@ class CreativeVideoRenderer:
 
                 av_circle = Image.new("RGBA", (av_size, av_size), (0, 0, 0, 0))
                 av_circle.paste(av_resized, (0, 0), mask=mask)
-                overlay.paste(av_circle, (margin_x, start_y), mask=av_circle)
+                overlay.paste(av_circle, (margin_x, header_y), mask=av_circle)
             except Exception as e:
-                print(f"Erro ao carregar avatar: {e}")
+                print(f"Erro ao desenhar avatar: {e}")
 
         # 2. Verified Badge
         if verified and os.path.exists(self.badge_icon):
@@ -78,43 +82,29 @@ class CreativeVideoRenderer:
                 badge = Image.open(self.badge_icon).convert("RGBA")
                 b_size = 38
                 badge_resized = badge.resize((b_size, b_size), Image.Resampling.LANCZOS)
-                overlay.paste(badge_resized, (margin_x + av_size - 28, start_y - 2), mask=badge_resized)
+                overlay.paste(badge_resized, (margin_x + av_size - 28, header_y - 2), mask=badge_resized)
             except Exception:
                 pass
 
-        # 3. Header Text
+        # 3. Header Names
         font_name = self._get_font("segoeuib.ttf", 36)
         font_user = self._get_font("segoeui.ttf", 26)
 
         text_x = margin_x + av_size + 20
-        text_y = start_y + 22
-
-        draw.text((text_x, text_y), name, font=font_name, fill="#000000")
-        draw.text((text_x, text_y + 44), handle, font=font_user, fill="#6b7280")
+        draw.text((text_x, header_y + 24), name, font=font_name, fill="#000000")
+        draw.text((text_x, header_y + 68), handle, font=font_user, fill="#6b7280")
 
         # 4. Headline
-        font_headline = self._get_font("segoeuib.ttf", 44)
-        headline_y = start_y + av_size + 42
-
+        font_headline = self._get_font("segoeuib.ttf", int(headline_size))
         clean_headline = headline.strip()
         draw.text((margin_x, headline_y), clean_headline, font=font_headline, fill="#000000", spacing=14)
 
-        # Calculate bounding box of headline
-        bbox = draw.textbbox((margin_x, headline_y), clean_headline, font=font_headline, spacing=14)
-        headline_bottom = bbox[3]
-
-        # Determine video Y position (if not custom specified)
-        if video_y is None:
-            actual_video_y = headline_bottom + 42
-        else:
-            actual_video_y = int(video_y)
-
-        # 5. Rounded transparent cutout for the video
+        # 5. Transparent Rounded Cutout for Video
         cutout_mask = Image.new("L", (W, H), 255)
         cutout_draw = ImageDraw.Draw(cutout_mask)
         cutout_draw.rounded_rectangle(
-            [(margin_x, actual_video_y), (margin_x + video_w, actual_video_y + video_h)],
-            radius=corner_radius,
+            [(margin_x, video_y), (margin_x + video_w, video_y + video_h)],
+            radius=int(corner_radius),
             fill=0
         )
         overlay.putalpha(cutout_mask)
@@ -126,7 +116,7 @@ class CreativeVideoRenderer:
             font_wm = self._get_font("segoeuib.ttf", 36)
 
             wm_cx = margin_x + video_w // 2
-            wm_cy = actual_video_y + video_h // 2 - 20
+            wm_cy = video_y + video_h // 2 - 20 + int(watermark_y_offset)
 
             alpha_int = int(255 * watermark_opacity)
             wm_draw.text((wm_cx + 1, wm_cy + 1), watermark_text.strip(), font=font_wm, fill=(0, 0, 0, int(alpha_int * 0.7)), anchor="mm")
@@ -134,7 +124,7 @@ class CreativeVideoRenderer:
 
             overlay = Image.alpha_composite(overlay, watermark_layer)
 
-        return overlay, actual_video_y, margin_x
+        return overlay, video_y, margin_x
 
     def render_creative(
         self,
@@ -142,21 +132,25 @@ class CreativeVideoRenderer:
         output_video=None,
         name="Bruno César | Tráfego Pago e Orgânico",
         handle="@brunocesar.2t",
-        headline="A headline aqui...",
+        headline="A headline aqui a headline aqui\nA headline aqui a headline aqui\nA headline aqui a headline aqui",
         avatar_path=None,
         verified=True,
-        video_w=880,
-        video_h=760,
-        video_y=None,
+        header_y=430,
+        headline_y=640,
+        headline_size=44,
+        video_w=864,
+        video_h=740,
+        video_y=890,
         video_zoom=1.0,
         video_pan_x=0.5,
         video_pan_y=0.5,
-        corner_radius=32,
+        corner_radius=36,
         watermark_text="@brunocesar.2t",
-        watermark_opacity=0.35
+        watermark_opacity=0.35,
+        watermark_y_offset=0
     ):
         """
-        Renders the final 1080x1920 video with custom parameters and scaling.
+        Renders the final 1080x1920 MP4 video with exact layout and zoom controls.
         """
         if not os.path.exists(input_video):
             raise FileNotFoundError(f"Vídeo de entrada não encontrado: {input_video}")
@@ -173,24 +167,24 @@ class CreativeVideoRenderer:
             headline=headline,
             avatar_path=avatar_path,
             verified=verified,
-            video_w=video_w,
-            video_h=video_h,
-            video_y=video_y,
-            corner_radius=corner_radius,
+            header_y=int(header_y),
+            headline_y=int(headline_y),
+            headline_size=int(headline_size),
+            video_w=int(video_w),
+            video_h=int(video_h),
+            video_y=int(video_y),
+            corner_radius=int(corner_radius),
             watermark_text=watermark_text,
-            watermark_opacity=watermark_opacity
+            watermark_opacity=float(watermark_opacity),
+            watermark_y_offset=int(watermark_y_offset)
         )
 
         temp_overlay = os.path.join(self.assets_dir, f"_temp_overlay_{os.getpid()}.png")
         overlay_img.save(temp_overlay, "PNG")
 
-        # Build FFmpeg filtergraph with zoom and cropping
-        # If zoom > 1.0, crop according to zoom and pan
         zoom = max(1.0, float(video_zoom))
-        
-        # Crop formula based on zoom and pan (0.0 to 1.0)
         crop_filter = f"crop=in_w/{zoom}:in_h/{zoom}:(in_w-in_w/{zoom})*{video_pan_x}:(in_h-in_h/{zoom})*{video_pan_y}"
-        scale_filter = f"scale={video_w}:{video_h}:force_original_aspect_ratio=increase,crop={video_w}:{video_h}"
+        scale_filter = f"scale={int(video_w)}:{int(video_h)}:force_original_aspect_ratio=increase,crop={int(video_w)}:{int(video_h)}"
 
         filter_graph = (
             f"color=c=white:s=1080x1920:d=1[bg];"

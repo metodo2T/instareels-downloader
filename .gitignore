@@ -1,6 +1,11 @@
 videos_baixados/
+uploads/
 __pycache__/
 *.pyc
 config.json
 .env
 *.tmp
+cloudflared.exe
+test_*.py
+test_*.png
+*.mp4
