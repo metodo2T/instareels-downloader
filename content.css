@@ -1,0 +1,56 @@
+/* Injected Download Button Styling */
+.insta-dl-btn-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.insta-dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+  user-select: none;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+}
+
+.insta-dl-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(220, 39, 67, 0.45);
+}
+
+.insta-dl-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.insta-dl-btn.loading {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+.insta-dl-btn.success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.insta-dl-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}

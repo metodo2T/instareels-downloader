@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InstaReels Downloader</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-box">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </div>
+        <div>
+          <h1 class="title">InstaReels</h1>
+          <p class="subtitle">Downloader de Vídeos</p>
+        </div>
+      </div>
+      <div class="badge">v1.0</div>
+    </header>
+
+    <!-- Main Card -->
+    <main class="main-card">
+      <div class="input-group">
+        <label for="urlInput" class="input-label">Link do Reel ou Post</label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="urlInput" 
+            placeholder="https://www.instagram.com/reel/..." 
+            autocomplete="off" 
+            spellcheck="false"
+          />
+          <button id="pasteBtn" class="icon-btn" title="Colar da área de transferência">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick detection from current tab -->
+      <button id="detectTabBtn" class="secondary-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>Usar vídeo da aba aberta</span>
+      </button>
+
+      <!-- Main Download Button -->
+      <button id="downloadBtn" class="primary-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span id="btnText">Baixar Vídeo MP4</span>
+        <div id="btnSpinner" class="spinner hidden"></div>
+      </button>
+
+      <!-- Status Feedback Area -->
+      <div id="statusArea" class="status-card hidden">
+        <div id="statusIcon" class="status-icon"></div>
+        <div class="status-content">
+          <div id="statusTitle" class="status-title">Processando...</div>
+          <div id="statusMessage" class="status-message">Aguarde enquanto extraímos a melhor qualidade.</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Recent History Section -->
+    <section class="history-section">
+      <div class="history-header">
+        <span class="history-title">Downloads Recentes</span>
+        <button id="clearHistoryBtn" class="text-btn">Limpar</button>
+      </div>
+      <ul id="historyList" class="history-list">
+        <li class="history-empty">Nenhum download ainda.</li>
+      </ul>
+    </section>
+
+    <!-- Tip Footer -->
+    <footer class="footer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tip-icon">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>Você também pode baixar direto pelo botão <b>Baixar Vídeo</b> que aparece dentro do Instagram!</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

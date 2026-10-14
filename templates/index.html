@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>InstaReels Downloader - Download em Lote</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a10;
+      --card: #131622;
+      --card-border: #222738;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --gradient: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      --accent: #e1306c;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 8px 0 12px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(225, 48, 108, 0.12);
+      border: 1px solid rgba(225, 48, 108, 0.25);
+      color: #f472b6;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Main Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .input-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e5e7eb;
+    }
+
+    .counter-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background: #0c0e16;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      resize: vertical;
+      line-height: 1.5;
+      font-family: monospace;
+      transition: all 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(225, 48, 108, 0.25);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-paste {
+      background: #1c2130;
+      border: 1px solid #2d354a;
+      color: #e5e7eb;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-paste:hover {
+      background: #2b3348;
+    }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear:hover {
+      color: #fff;
+      border-color: #4b5563;
+    }
+
+    .btn-download-all {
+      width: 100%;
+      background: var(--gradient);
+      border: none;
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(220, 39, 67, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-download-all:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(220, 39, 67, 0.6);
+    }
+
+    .btn-download-all:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Batch Progress Card */
+    .progress-card {
+      background: #0f121b;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: #1c2130;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gradient);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    /* Queue items */
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #141824;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    .queue-item-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      max-width: 70%;
+    }
+
+    .queue-status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .status-waiting { background: #1e2436; color: #94a3b8; }
+    .status-running { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .status-done { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .status-fail { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    .queue-url {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #cbd5e1;
+    }
+
+    /* Quick Actions */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: #181d2c;
+      border: 1px solid #283144;
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #232a3f;
+      border-color: #3b455f;
+    }
+
+    .btn-zip {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-zip:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+
+    /* History */
+    .history-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #0d0f17;
+      border: 1px solid #1a1e2d;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .history-name {
+      color: #e2e8f0;
+      max-width: 60%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-sm {
+      background: #242938;
+      border: 1px solid #374151;
+      color: #e5e7eb;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-sm:hover {
+      background: #374151;
+      color: #fff;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="badge">🚀 Download Rápido & Sem Limites</div>
+      <h1 class="title">InstaReels Downloader</h1>
+      <p class="subtitle">Cole 1, 5 ou 20 links do Instagram e baixe todos os vídeos em MP4 de uma vez.</p>
+    </header>
+
+    <!-- Main Card -->
+    <main class="card">
+      <div class="input-header">
+        <label for="urlsInput" class="input-label">Cole os links do Instagram (1 por linha):</label>
+        <span id="linkCountBadge" class="counter-badge">0 links</span>
+      </div>
+
+      <textarea 
+        id="urlsInput" 
+        placeholder="https://www.instagram.com/reel/C8XYZ...&#10;https://www.instagram.com/reel/C9ABC...&#10;https://www.instagram.com/p/D123..."
+        autocomplete="off"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="btn-row">
+        <button id="pasteBtn" class="btn-paste">
+          📋 Colar da Área de Transferência
+        </button>
+        <button id="clearBtn" class="btn-clear">
+          Limpar
+        </button>
+      </div>
+
+      <button id="downloadAllBtn" class="btn-download-all">
+        <span id="btnIcon">⬇</span>
+        <span id="btnText">BAIXAR VÍDEOS</span>
+        <div id="btnSpinner" class="spinner hidden"></div>
+      </button>
+
+      <!-- Progress / Queue Section -->
+      <div id="progressCard" class="progress-card hidden">
+        <div class="progress-header">
+          <span id="progressSummary">Progresso: 0 de 0</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+
+        <div id="queueList" class="queue-list"></div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="actions-grid">
+        <a id="btnZipAll" href="/api/download-zip" class="btn-action btn-zip">
+          📦 Baixar Todos em .ZIP
+        </a>
+        <button id="btnClearServer" class="btn-action">
+          🗑️ Limpar Pasta
+        </button>
+      </div>
+    </main>
+
+    <!-- History / Files on server -->
+    <section class="history-card">
+      <div class="history-header">
+        <h2 class="history-title">Vídeos Baixados no Servidor</h2>
+        <button id="refreshBtn" class="btn-sm">🔄 Atualizar</button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </section>
+  </div>
+
+  <script>
+    const urlsInput = document.getElementById('urlsInput');
+    const linkCountBadge = document.getElementById('linkCountBadge');
+    const pasteBtn = document.getElementById('pasteBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    const btnIcon = document.getElementById('btnIcon');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    const progressCard = document.getElementById('progressCard');
+    const progressSummary = document.getElementById('progressSummary');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const queueList = document.getElementById('queueList');
+
+    const historyList = document.getElementById('historyList');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const btnClearServer = document.getElementById('btnClearServer');
+
+    let isProcessing = false;
+
+    // Helper to extract clean instagram links
+    function getLinks() {
+      const text = urlsInput.value;
+      const regex = /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|reels|p|tv)\/[A-Za-z0-9_-]+/g;
+      const matches = text.match(regex) || [];
+      // Remove duplicates while preserving order
+      return [...new Set(matches)];
+    }
+
+    function updateCounter() {
+      const links = getLinks();
+      linkCountBadge.textContent = `${links.length} ${links.length === 1 ? 'link' : 'links'}`;
+      downloadAllBtn.disabled = links.length === 0 || isProcessing;
+    }
+
+    urlsInput.addEventListener('input', updateCounter);
+
+    // Paste button
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          if (urlsInput.value.trim()) {
+            urlsInput.value += '\n' + text.trim();
+          } else {
+            urlsInput.value = text.trim();
+          }
+          updateCounter();
+        }
+      } catch (e) {
+        urlsInput.focus();
+      }
+    });
+
+    // Clear button
+    clearBtn.addEventListener('click', () => {
+      urlsInput.value = '';
+      updateCounter();
+    });
+
+    // Batch Download Process
+    downloadAllBtn.addEventListener('click', async () => {
+      const links = getLinks();
+      if (links.length === 0 || isProcessing) return;
+
+      isProcessing = true;
+      downloadAllBtn.disabled = true;
+      btnIcon.classList.add('hidden');
+      btnSpinner.classList.remove('hidden');
+      btnText.textContent = `BAIXANDO (${links.length} VÍDEOS)...`;
+
+      progressCard.classList.remove('hidden');
+      queueList.innerHTML = '';
+
+      // Initialize queue UI
+      const queueItems = links.map((link, idx) => {
+        const div = document.createElement('div');
+        div.className = 'queue-item';
+        div.id = `queue-item-${idx}`;
+        div.innerHTML = `
+          <div class="queue-item-info">
+            <span class="queue-status-badge status-waiting">Na fila</span>
+            <span class="queue-url" title="${link}">${link}</span>
+          </div>
+          <span style="font-size:11px; color:#6b7280;">Aguardando</span>
+        `;
+        queueList.appendChild(div);
+        return { link, idx, el: div };
+      });
+
+      let completed = 0;
+      let successes = 0;
+
+      // Process links sequentially to respect server and network resources
+      for (const item of queueItems) {
+        // Update item to running
+        const badge = item.el.querySelector('.queue-status-badge');
+        const detail = item.el.querySelector('span:last-child');
+        badge.className = 'queue-status-badge status-running';
+        badge.textContent = 'Baixando...';
+        detail.textContent = 'Conectando...';
+
+        try {
+          const res = await fetch('/api/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: item.link })
+          });
+          const data = await res.json();
+
+          if (data && data.success) {
+            badge.className = 'queue-status-badge status-done';
+            badge.textContent = '✓ Concluído';
+            detail.innerHTML = `<a href="/videos/${encodeURIComponent(data.filename)}" download class="btn-sm">💾 Baixar (${data.size_mb} MB)</a>`;
+            successes++;
+          } else {
+            badge.className = 'queue-status-badge status-fail';
+            badge.textContent = '✕ Erro';
+            detail.textContent = data.error || 'Falha';
+          }
+        } catch (err) {
+          badge.className = 'queue-status-badge status-fail';
+          badge.textContent = '✕ Falha de conexão';
+          detail.textContent = 'Erro de rede';
+        }
+
+        completed++;
+        const pct = Math.round((completed / links.length) * 100);
+        progressSummary.textContent = `Progresso: ${completed} de ${links.length} (${successes} com sucesso)`;
+        progressPercent.textContent = `${pct}%`;
+        progressBarFill.style.width = `${pct}%`;
+      }
+
+      // Finish
+      isProcessing = false;
+      downloadAllBtn.disabled = false;
+      btnIcon.classList.remove('hidden');
+      btnSpinner.classList.add('hidden');
+      btnText.textContent = `BAIXAR VÍDEOS`;
+      loadHistory();
+    });
+
+    // Clear server files
+    btnClearServer.addEventListener('click', async () => {
+      if (confirm('Deseja apagar os vídeos baixados da pasta para liberar espaço?')) {
+        await fetch('/api/clear-videos', { method: 'POST' });
+        loadHistory();
+      }
+    });
+
+    // Load History
+    async function loadHistory() {
+      try {
+        const res = await fetch('/api/videos');
+        const videos = await res.json();
+
+        if (!videos || videos.length === 0) {
+          historyList.innerHTML = '<div style="color:#6b7280; font-size:12px; text-align:center; padding:12px;">Nenhum vídeo salvo na pasta.</div>';
+          return;
+        }
+
+        historyList.innerHTML = '';
+        videos.forEach(v => {
+          const item = document.createElement('div');
+          item.className = 'history-item';
+          item.innerHTML = `
+            <div class="history-name" title="${v.name}">${v.name}</div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:11px; color:#6b7280;">${v.size_mb} MB</span>
+              <a href="/videos/${encodeURIComponent(v.name)}" download="${v.name}" class="btn-sm">⬇ Baixar</a>
+            </div>
+          `;
+          historyList.appendChild(item);
+        });
+      } catch (e) {}
+    }
+
+    refreshBtn.addEventListener('click', loadHistory);
+    updateCounter();
+    loadHistory();
+  </script>
+</body>
+</html>

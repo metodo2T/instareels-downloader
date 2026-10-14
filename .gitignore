@@ -1,0 +1,6 @@
+videos_baixados/
+__pycache__/
+*.pyc
+config.json
+.env
+*.tmp
