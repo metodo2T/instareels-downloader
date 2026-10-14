@@ -80,10 +80,11 @@ class InstagramDownloader:
                 convert_cmd = [
                     self.ffmpeg_path,
                     "-y",
+                    "-threads", "2",
                     "-i", filepath,
                     "-c:v", "libx264",
-                    "-preset", "veryfast",
-                    "-crf", "22",
+                    "-preset", "ultrafast",
+                    "-crf", "23",
                     "-pix_fmt", "yuv420p",
                     "-c:a", "aac",
                     "-b:a", "128k",
